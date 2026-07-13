@@ -5,10 +5,9 @@ from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 
-
-
-
+@tool
 def search(query: str) -> str:
     """
     Tool that searches over internet 
@@ -20,12 +19,14 @@ def search(query: str) -> str:
     print(f"Searching for: {query}")
     return "Tokkyo weather is sunny"
 
-llm = ChatOpenAI()
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile"
+)
 tools = [search]
 agent = create_agent(model=llm, tools=tools)
 def main():
     print("Hello from search-engine-ai-agent!")
-    result = agent.invoke({"message": HumanMessage(content="What is the weather in Tokyo?")})
+    result = agent.invoke({"messages":HumanMessage(content="What is the weather in Tokyo?")})
     print(result)
     print("Goodbye from search-engine-ai-agent!")
 
