@@ -1,42 +1,26 @@
 from dotenv import load_dotenv
-
-load_dotenv()
 from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
-from langchain_groq import ChatGroq
+from langchain_google_genai import ChatGoogleGenerativeAI as ChatGroq
+from langchain_tavily import TavilySearch
 
-# from langchain_openai import ChatOpenAI
-from tavily import TavilyClient
+load_dotenv()
 
-tavily = TavilyClient()
-
-
-@tool
-def search(query: str) -> str:
-    """
-    Tool that searches over internet
-    Args:
-        query: The query to search for
-    Returns:
-    The search results
-    """
-    print(f"Searching for: {query}")
-    return tavily.search(query=query)
-
-
-llm = ChatGroq(model="llama-3.1-8b-instant")
-tools = [search]
+llm = ChatGroq(model="gemini-3.5-flash", temperature=0.0)
+tools = [TavilySearch()]
 agent = create_agent(model=llm, tools=tools)
 
 
 def main():
-    print("Hello from search-engine-ai-agent!")
     result = agent.invoke(
-        {"messages": HumanMessage(content="What is the weather in Tokyo?")}
+        {
+            "messages": HumanMessage(
+                content="search for 3 job postings for an ai engineer using langchain in the bay area on linkedin and list their details"
+            )
+        }
     )
     print(result)
-    print("Goodbye from search-engine-ai-agent!")
 
 
 if __name__ == "__main__":
